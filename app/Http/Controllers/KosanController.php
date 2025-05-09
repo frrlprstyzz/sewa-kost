@@ -1,11 +1,11 @@
 <?php
 
-// app/Http/Controllers/KosanController.php
-
 namespace App\Http\Controllers;
 
 use App\Models\Kosan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class KosanController extends Controller
 {
@@ -16,7 +16,7 @@ class KosanController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'kategori_id' => 'required|exists:kategoris,id',
             'nama_kosan' => 'required|string|max:255',
@@ -25,10 +25,28 @@ class KosanController extends Controller
             'jumlah_kamar' => 'required|integer',
             'harga_per_bulan' => 'required|numeric',
             'galeri' => 'nullable|array',
-            'galeri.*' => 'url',
+            'galeri.*' => 'file|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        return Kosan::create($request->all());
+        $paths = [];
+        if ($request->hasFile('galeri')) {
+            foreach ($request->file('galeri') as $file) {
+                $paths[] = $file->store('galeri', 'public');
+            }
+        }
+
+        $kosan = Kosan::create([
+            'user_id' => $validated['user_id'],
+            'kategori_id' => $validated['kategori_id'],
+            'nama_kosan' => $validated['nama_kosan'],
+            'alamat' => $validated['alamat'],
+            'deskripsi' => $validated['deskripsi'] ?? null,
+            'jumlah_kamar' => $validated['jumlah_kamar'],
+            'harga_per_bulan' => $validated['harga_per_bulan'],
+            'galeri' => json_encode($paths),
+        ]);
+
+        return response()->json($kosan, 201);
     }
 
     public function show($id)
@@ -40,7 +58,7 @@ class KosanController extends Controller
     {
         $kosan = Kosan::findOrFail($id);
 
-        $request->validate([
+        $validated = $request->validate([
             'user_id' => 'sometimes|exists:users,id',
             'kategori_id' => 'sometimes|exists:kategoris,id',
             'nama_kosan' => 'sometimes|string|max:255',
@@ -49,12 +67,22 @@ class KosanController extends Controller
             'jumlah_kamar' => 'sometimes|integer',
             'harga_per_bulan' => 'sometimes|numeric',
             'galeri' => 'nullable|array',
-            'galeri.*' => 'url',
+            'galeri.*' => 'file|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $kosan->update($request->all());
+        $data = $validated;
 
-        return $kosan;
+        if ($request->hasFile('galeri')) {
+            $paths = [];
+            foreach ($request->file('galeri') as $file) {
+                $paths[] = $file->store('galeri', 'public');
+            }
+            $data['galeri'] = json_encode($paths);
+        }
+
+        $kosan->update($data);
+
+        return response()->json($kosan);
     }
 
     public function destroy($id)

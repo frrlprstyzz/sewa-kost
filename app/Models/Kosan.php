@@ -1,7 +1,5 @@
 <?php
 
-// app/Models/Kosan.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,27 +21,36 @@ class Kosan extends Model
     ];
 
     protected $casts = [
-        'galeri' => 'array', // untuk field JSON
+        'galeri' => 'array', // ✅ otomatis konversi JSON ke array di Laravel
     ];
 
-    public function user() {
+    // Relasi ke user
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function kategori() {
+    // Relasi ke kategori
+    public function kategori()
+    {
         return $this->belongsTo(Kategori::class);
     }
 
-    public function fasilitas() {
+    // Relasi ke fasilitas
+    public function fasilitas()
+    {
         return $this->hasMany(Fasilitas::class);
     }
 
-    public function pengaduans() {
+    // Relasi ke pengaduan
+    public function pengaduans()
+    {
         return $this->hasMany(Pengaduan::class);
     }
 
-    public function pembayarans() {
+    // Relasi ke pembayaran
+    public function pembayarans()
+    {
         return $this->hasMany(Pembayaran::class);
     }
 }
-

@@ -10,8 +10,16 @@ use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\PembayaranController;
 
 
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboard', fn () => 'Ini halaman admin');
+});
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    return response()->json([
+        'status' => 'success',
+        'user' => $request->user(),
+    ]);
 });
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -25,7 +33,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 Route::apiResource('kategoris', KategoriController::class);
-Route::apiResource('kosans', KosanController::class);
 Route::apiResource('fasilitas', FasilitasController::class);
 Route::apiResource('pengaduans', PengaduanController::class);
 Route::apiResource('pembayarans', PembayaranController::class);
