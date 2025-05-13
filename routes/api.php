@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Kosan Routes
     Route::apiResource('kosans', KosanController::class);
     Route::get('/kosans/featured', [KosanController::class, 'featured']);
+    Route::get('/kosans/owner/{userId}', [KosanController::class, 'getByOwnerId']);
 
     // Optional: make these private too
     Route::apiResource('kategoris', KategoriController::class);
@@ -46,3 +47,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [UserController::class, 'dashboard']);
     });
 });
+
+// Public route for fasilitas
+Route::get('/fasilitas', [FasilitasController::class, 'index']);

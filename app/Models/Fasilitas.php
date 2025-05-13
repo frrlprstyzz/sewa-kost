@@ -11,11 +11,22 @@ class Fasilitas extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['kosan_id', 'nama_fasilitas'];
+    protected $table = 'fasilitas';
+    
+    protected $fillable = [
+        'nama_fasilitas',
+        'icon'
+    ];
 
-    public function kosan()
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
+
+    // Relasi many-to-many ke Kosan
+    public function kosans()
     {
-        return $this->belongsTo(Kosan::class);
+        return $this->belongsToMany(Kosan::class, 'kosan_fasilitas');
     }
 }
 

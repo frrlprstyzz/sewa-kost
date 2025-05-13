@@ -17,7 +17,8 @@ class AuthController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|unique:users',
             'password' => 'required|string|min:6',
-             'role'     => 'required|in:admin,pemilik,user',
+            'role'     => 'required|in:admin,pemilik,user',
+            'nomor'    => 'required|string|max:15', // tambahkan validasi nomor
         ]);
 
         $user = User::create([
@@ -25,6 +26,7 @@ class AuthController extends Controller
             'email'    => $request->email,
             'password' => Hash::make($request->password),
             'role'     => $request->role,
+            'nomor'    => $request->nomor, // tambahkan ini
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;

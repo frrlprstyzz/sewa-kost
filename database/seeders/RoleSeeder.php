@@ -33,7 +33,7 @@ class RoleSeeder extends Seeder
         // Create admin user
         $admin = User::create([
             'name' => 'Admin',
-            'email' => 'admin@example.com',
+            'email' => 'admin@gmail.com.com',
             'password' => bcrypt('admin123'),
             'status' => 'active'
         ]);

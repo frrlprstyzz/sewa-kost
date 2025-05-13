@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('nomor', 15)->nullable(); 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'pemilik', 'user'])->default('user');
+            $table->enum('role', ['admin', 'pemilik', 'user'])->default('user'); // Role already defined here
             $table->rememberToken();
             $table->timestamps();
         });

@@ -11,7 +11,7 @@ class KosanController extends Controller
 {
     public function index()
     {
-        $kosans = Kosan::with(['user', 'kategori'])->get();
+        $kosans = Kosan::with(['user', 'kategori', 'fasilitas'])->get();
         return response()->json(['data' => $kosans], 200);
     }
 
@@ -28,14 +28,16 @@ class KosanController extends Controller
                 'jumlah_kamar' => 'required|integer',
                 'harga_per_bulan' => 'required|numeric',
                 'galeri' => 'nullable|array',
-                'galeri.*' => 'file|image|mimes:jpeg,png,jpg|max:2048',
+                'galeri.*' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                'fasilitas' => 'nullable|array',
+                'fasilitas.*' => 'exists:fasilitas,id',
             ]);
 
-            // Menyimpan gambar galeri jika ada
-            $paths = [];
+            $images = [];
             if ($request->hasFile('galeri')) {
-                foreach ($request->file('galeri') as $file) {
-                    $paths[] = $file->store('galeri', 'public');
+                foreach ($request->file('galeri') as $image) {
+                    $path = $image->store('kosans', 'public');
+                    $images[] = $path;
                 }
             }
 
@@ -48,14 +50,27 @@ class KosanController extends Controller
                 'deskripsi' => $validated['deskripsi'] ?? null,
                 'jumlah_kamar' => $validated['jumlah_kamar'],
                 'harga_per_bulan' => $validated['harga_per_bulan'],
-                'galeri' => json_encode($paths),
+                'galeri' => $images,
             ]);
 
-            return response()->json($kosan, 201);
+            // Attach facilities if provided
+            if (isset($validated['fasilitas'])) {
+                $kosan->fasilitas()->attach($validated['fasilitas']);
+            }
+
+            return response()->json([
+                'data' => $kosan->load(['kategori', 'fasilitas']),
+                'message' => 'Kosan created successfully'
+            ], 201);
         } catch (ValidationException $e) {
             return response()->json([
                 'error' => $e->errors(),
             ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error creating kosan',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -103,5 +118,24 @@ class KosanController extends Controller
         $kosan->delete();
 
         return response()->json(['message' => 'Kosan deleted']);
+    }
+
+    public function getByOwnerId($userId)
+    {
+        try {
+            $kosans = Kosan::with(['kategori', 'fasilitas', 'user'])
+                ->where('user_id', $userId)
+                ->get();
+
+            return response()->json([
+                'data' => $kosans,
+                'message' => 'Success fetching kosan data'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error fetching kosan data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

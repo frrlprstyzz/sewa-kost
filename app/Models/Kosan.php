@@ -17,11 +17,12 @@ class Kosan extends Model
         'deskripsi',
         'jumlah_kamar',
         'harga_per_bulan',
-        'galeri',
+        'galeri'
     ];
 
     protected $casts = [
-        'galeri' => 'array', // ✅ otomatis konversi JSON ke array di Laravel
+        'galeri' => 'array',
+        'harga_per_bulan' => 'float'
     ];
 
     // Relasi ke user
@@ -39,7 +40,7 @@ class Kosan extends Model
     // Relasi ke fasilitas
     public function fasilitas()
     {
-        return $this->hasMany(Fasilitas::class);
+        return $this->belongsToMany(Fasilitas::class, 'kosan_fasilitas');
     }
 
     // Relasi ke pengaduan

@@ -11,7 +11,15 @@ class FasilitasController extends Controller
 {
     public function index()
     {
-        return Fasilitas::with('kosan')->get();
+        try {
+            $fasilitas = Fasilitas::all();
+            return response()->json($fasilitas);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error fetching facilities',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function store(Request $request)
