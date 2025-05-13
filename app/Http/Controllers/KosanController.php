@@ -138,4 +138,49 @@ class KosanController extends Controller
             ], 500);
         }
     }
+
+    public function getAllPublic()
+    {
+        try {
+            $kosans = Kosan::with(['kategori:id,nama_kategori', 'fasilitas:id,nama_fasilitas'])
+                ->select('id', 'nama_kosan', 'alamat', 'harga_per_bulan', 'galeri')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $kosans
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan dalam mengambil data kosan'
+            ], 500);
+        }
+    }
+
+    public function getPublicById($id)
+    {
+        try {
+            $kosan = Kosan::with(['kategori', 'fasilitas', 'user'])
+                ->where('id', $id)
+                ->get();
+
+            if ($kosan->isEmpty()) {
+                return response()->json([
+                    'message' => 'Kosan tidak ditemukan'
+                ], 404);
+            }
+
+            return response()->json([
+                'data' => $kosan,
+                'message' => 'Success fetching kosan data'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error fetching kosan data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

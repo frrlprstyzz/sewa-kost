@@ -16,6 +16,12 @@ use App\Http\Controllers\{
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+// Public Kosan Routes
+Route::get('/kosans/public', [KosanController::class, 'getAllPublic']);
+Route::get('/kosans/public/{id}', [KosanController::class, 'getPublicById']); // Add this line
+Route::get('/fasilitas', [FasilitasController::class, 'index']);
+Route::get('/kategoris', [KategoriController::class, 'index']);
+
 // Authenticated User Routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -46,7 +52,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('user')->middleware('role:user')->group(function () {
         Route::get('/dashboard', [UserController::class, 'dashboard']);
     });
-});
 
-// Public route for fasilitas
-Route::get('/fasilitas', [FasilitasController::class, 'index']);
+    Route::get('/users', [AuthController::class, 'getAllUsers'])->middleware('role:admin');
+});
