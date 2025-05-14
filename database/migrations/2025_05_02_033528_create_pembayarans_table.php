@@ -15,6 +15,8 @@ return new class extends Migration {
 
             $table->string('bukti_pembayaran')->nullable();
             $table->date('tanggal_bayar');
+            $table->integer('durasi_sewa'); // Tambahkan field durasi
+            $table->decimal('total_harga', 10, 2); // Tambahkan field total harga
             $table->enum('status', ['pending', 'diterima', 'ditolak'])->default('pending');
 
             $table->timestamps();

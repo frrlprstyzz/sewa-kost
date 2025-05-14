@@ -11,7 +11,21 @@ class Pembayaran extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'kosan_id', 'bukti_pembayaran', 'tanggal_bayar', 'status'];
+    protected $fillable = [
+        'user_id',
+        'kosan_id',
+        'bukti_pembayaran',
+        'tanggal_bayar',
+        'durasi_sewa',
+        'total_harga',
+        'status'
+    ];
+
+    protected $casts = [
+        'tanggal_bayar' => 'date',
+        'total_harga' => 'decimal:2',
+        'durasi_sewa' => 'integer'
+    ];
 
     public function user()
     {
@@ -21,5 +35,10 @@ class Pembayaran extends Model
     public function kosan()
     {
         return $this->belongsTo(Kosan::class);
+    }
+
+    public function getStatusLabelAttribute()
+    {
+        return ucfirst($this->status);
     }
 }

@@ -21,8 +21,10 @@ class PembayaranController extends Controller
             'user_id' => 'required|exists:users,id',
             'kosan_id' => 'required|exists:kosans,id',
             'tanggal_bayar' => 'required|date',
+            'durasi_sewa' => 'required|integer|min:1|max:24',
+            'total_harga' => 'required|numeric',
             'status' => 'in:pending,diterima,ditolak',
-            'bukti_pembayaran' => 'nullable|image|max:2048'
+            'bukti_pembayaran' => 'required|image|max:2048'
         ]);
 
         $data = $request->all();
@@ -74,5 +76,48 @@ class PembayaranController extends Controller
         $pembayaran->delete();
 
         return response()->json(['message' => 'Pembayaran deleted']);
+    }
+
+    public function getUserPayments($userId)
+    {
+        try {
+            $payments = Pembayaran::with(['kosan'])
+                ->where('user_id', $userId)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $payments
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error fetching payments: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getAcceptedPaymentsByKosanOwner($userId)
+    {
+        try {
+            $payments = Pembayaran::with(['user', 'kosan'])
+                ->whereHas('kosan', function($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                })
+                ->where('status', 'diterima')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $payments
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error fetching payments: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -84,4 +84,30 @@ class AuthController extends Controller
     {
         return response()->json(User::all());
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'nomor' => 'required|string|max:15'
+        ]);
+
+        try {
+            $user->update($validated);
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Profile updated successfully',
+                'user' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update profile'
+            ], 500);
+        }
+    }
 }

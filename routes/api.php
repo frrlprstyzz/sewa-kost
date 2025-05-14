@@ -39,6 +39,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('fasilitas', FasilitasController::class);
     Route::apiResource('pengaduans', PengaduanController::class);
     Route::apiResource('pembayarans', PembayaranController::class);
+    Route::get('/pembayarans/accepted/{userId}', [PembayaranController::class, 'getAcceptedPaymentsByKosanOwner']);
+    Route::get('/pembayarans/user/{userId}', [PembayaranController::class, 'getUserPayments']);
+
+    // Profile update route
+    Route::put('/me/update', [AuthController::class, 'updateProfile']);
 
     // Role-based dashboards
     Route::prefix('admin')->middleware('role:admin')->group(function () {
