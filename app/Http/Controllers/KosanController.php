@@ -81,35 +81,73 @@ class KosanController extends Controller
 
     public function update(Request $request, $id)
     {
-        $kosan = Kosan::findOrFail($id);
+        try {
+            $kosan = Kosan::findOrFail($id);
+            
+            // Validasi request
+            $validated = $request->validate([
+                'kategori_id' => 'sometimes|exists:kategoris,id',
+                'nama_kosan' => 'sometimes|string|max:255',
+                'alamat' => 'sometimes|string',
+                'deskripsi' => 'nullable|string',
+                'jumlah_kamar' => 'sometimes|integer',
+                'harga_per_bulan' => 'sometimes|numeric',
+                'galeri' => 'nullable|array',
+                'galeri.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+                'existing_images' => 'nullable|array',
+                'fasilitas' => 'nullable|array',
+            ]);
 
-        // Validasi data input
-        $validated = $request->validate([
-            'user_id' => 'sometimes|exists:users,id',
-            'kategori_id' => 'sometimes|exists:kategoris,id',
-            'nama_kosan' => 'sometimes|string|max:255',
-            'alamat' => 'sometimes|string',
-            'deskripsi' => 'nullable|string',
-            'jumlah_kamar' => 'sometimes|integer',
-            'harga_per_bulan' => 'sometimes|numeric',
-            'galeri' => 'nullable|array',
-            'galeri.*' => 'file|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+            $updateData = collect($validated)->except(['galeri', 'existing_images', 'fasilitas'])->toArray();
 
-        $data = $validated;
+            // Inisialisasi array untuk gambar final
+            $finalImages = [];
 
-        // Menyimpan gambar galeri jika ada
-        if ($request->hasFile('galeri')) {
-            $paths = [];
-            foreach ($request->file('galeri') as $file) {
-                $paths[] = $file->store('galeri', 'public');
+            // Simpan gambar yang sudah ada
+            if ($request->has('existing_images')) {
+                $finalImages = array_values($request->existing_images);
             }
-            $data['galeri'] = json_encode($paths);
+
+            // Upload dan tambahkan gambar baru
+            if ($request->hasFile('galeri')) {
+                foreach ($request->file('galeri') as $image) {
+                    if ($image->isValid()) {
+                        $path = $image->store('kosans', 'public');
+                        $finalImages[] = $path;
+                    }
+                }
+            }
+
+            // Update data gambar di database
+            $updateData['galeri'] = $finalImages;
+
+            // Update data kosan
+            $kosan->update($updateData);
+
+            // Update fasilitas jika ada
+            if ($request->has('fasilitas')) {
+                $kosan->fasilitas()->sync($request->fasilitas);
+            }
+
+            // Load relasi untuk response
+            $kosan->load(['kategori', 'fasilitas']);
+
+            return response()->json([
+                'message' => 'Kosan berhasil diupdate',
+                'data' => $kosan
+            ]);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error updating kosan',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $kosan->update($data);
-
-        return response()->json($kosan);
     }
 
     public function destroy($id)
