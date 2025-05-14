@@ -110,4 +110,48 @@ class AuthController extends Controller
             ], 500);
         }
     }
+    
+    public function destroy($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+            
+            return response()->json([
+                'message' => 'User berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menghapus user'
+            ], 500);
+        }
+    }
+
+    public function update($id, Request $request)
+    {
+        try {
+            $user = User::findOrFail($id);
+            
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'nomor' => 'required|string|max:15',
+                'role' => 'required|in:pemilik,user'
+            ]);
+
+            $user->update($validated);
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data pengguna berhasil diperbarui',
+                'user' => $user
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui data pengguna: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
