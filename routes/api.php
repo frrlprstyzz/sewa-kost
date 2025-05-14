@@ -41,7 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('pembayarans', PembayaranController::class);
     Route::get('/pembayarans/accepted/{userId}', [PembayaranController::class, 'getAcceptedPaymentsByKosanOwner']);
     Route::get('/pembayarans/user/{userId}', [PembayaranController::class, 'getUserPayments']);
-
+    Route::get('/users', [AuthController::class, 'getAllUsers'])->middleware('role:admin');
+    Route::delete('/users/{id}', [AuthController::class, 'destroy']);
+    Route::put('/users/{id}', [AuthController::class, 'update'])->middleware('role:admin');
     // Profile update route
     Route::put('/me/update', [AuthController::class, 'updateProfile']);
 
@@ -58,7 +60,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [UserController::class, 'dashboard']);
     });
 
-    Route::get('/users', [AuthController::class, 'getAllUsers'])->middleware('role:admin');
-    Route::delete('/users/{id}', [AuthController::class, 'destroy']);
-    Route::put('/users/{id}', [AuthController::class, 'update'])->middleware('role:admin');
+    
 });
