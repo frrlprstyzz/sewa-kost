@@ -121,4 +121,34 @@ class PembayaranController extends Controller
             ], 500);
         }
     }
+
+    public function cancel($id, Request $request)
+    {
+        $user = $request->user();
+        $pembayaran = Pembayaran::findOrFail($id);
+
+        // Pastikan hanya user yang punya pembayaran ini yang bisa membatalkan
+        if ($pembayaran->user_id !== $user->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak diizinkan membatalkan pesanan ini'
+            ], 403);
+        }
+
+        // Hanya bisa membatalkan jika status masih pending
+        if ($pembayaran->status !== 'pending') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Pesanan tidak bisa dibatalkan'
+            ], 400);
+        }
+
+        $pembayaran->status = 'dibatalkan'; // Ubah dari 'ditolak' ke 'dibatalkan'
+        $pembayaran->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Pesanan berhasil dibatalkan'
+        ]);
+    }
 }

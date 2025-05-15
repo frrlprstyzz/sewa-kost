@@ -154,4 +154,46 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function changePassword(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'oldPassword' => 'required|string',
+            'newPassword' => 'required|string|min:6',
+        ]);
+
+        if (!Hash::check($request->oldPassword, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Password lama salah'
+            ], 400);
+        }
+
+        $user->password = Hash::make($request->newPassword);
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password berhasil diubah'
+        ]);
+    }
+    
+    public function deleteMe(Request $request)
+    {
+        $user = $request->user();
+        try {
+            $user->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Akun berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menghapus akun'
+            ], 500);
+        }
+    }
 }

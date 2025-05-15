@@ -46,6 +46,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/users/{id}', [AuthController::class, 'update'])->middleware('role:admin');
     // Profile update route
     Route::put('/me/update', [AuthController::class, 'updateProfile']);
+    Route::put('/me/change-password', [AuthController::class, 'changePassword']);
+    Route::delete('/me/delete', [AuthController::class, 'deleteMe']);
 
     // Role-based dashboards
     Route::prefix('admin')->middleware('role:admin')->group(function () {
@@ -60,5 +62,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [UserController::class, 'dashboard']);
     });
 
-    
+    Route::put('/pembayarans/{id}/cancel', [PembayaranController::class, 'cancel']);
 });

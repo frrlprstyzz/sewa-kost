@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->date('tanggal_bayar');
             $table->integer('durasi_sewa');
             $table->decimal('total_harga', 10, 2);
-            $table->enum('status', ['pending', 'diterima', 'ditolak'])->default('pending');
+            $table->enum('status', ['pending', 'diterima', 'ditolak', 'dibatalkan'])->default('pending');
             $table->string('kode_pembayaran', 10)->nullable();
 
             $table->timestamps();
