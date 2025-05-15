@@ -18,7 +18,8 @@ class Pembayaran extends Model
         'tanggal_bayar',
         'durasi_sewa',
         'total_harga',
-        'status'
+        'status',
+        'kode_pembayaran' // tambahkan ini
     ];
 
     protected $casts = [

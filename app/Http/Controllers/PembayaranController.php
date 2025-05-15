@@ -24,7 +24,8 @@ class PembayaranController extends Controller
             'durasi_sewa' => 'required|integer|min:1|max:24',
             'total_harga' => 'required|numeric',
             'status' => 'in:pending,diterima,ditolak',
-            'bukti_pembayaran' => 'required|image|max:2048'
+            'bukti_pembayaran' => 'required|image|max:2048',
+            'kode_pembayaran' => 'required|string|max:10', // tambahkan validasi ini
         ]);
 
         $data = $request->all();

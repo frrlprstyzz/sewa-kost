@@ -76,7 +76,9 @@ class KosanController extends Controller
 
     public function show($id)
     {
-        return Kosan::with(['user', 'kategori'])->findOrFail($id);
+        // Tambahkan relasi fasilitas
+        $kosan = Kosan::with(['user', 'kategori', 'fasilitas'])->findOrFail($id);
+        return response()->json($kosan);
     }
 
     public function update(Request $request, $id)
@@ -181,7 +183,7 @@ class KosanController extends Controller
     {
         try {
             $kosans = Kosan::with(['kategori:id,nama_kategori', 'fasilitas:id,nama_fasilitas'])
-                ->select('id', 'nama_kosan', 'alamat', 'harga_per_bulan', 'galeri')
+                ->select('id', 'nama_kosan', 'alamat', 'harga_per_bulan', 'galeri', 'kategori_id')
                 ->orderBy('created_at', 'desc')
                 ->get();
 
