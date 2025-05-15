@@ -16,10 +16,13 @@ class FasilitasSeeder extends Seeder
             ['nama_fasilitas' => 'Kamar Mandi Dalam', 'icon' => 'fa-bath'],
             ['nama_fasilitas' => 'Parkir Motor', 'icon' => 'fa-motorcycle'],
             ['nama_fasilitas' => 'Parkir Mobil', 'icon' => 'fa-car'],
-            ['nama_fasilitas' => 'Dapur', 'icon' => 'fa-kitchen-set'],
-            ['nama_fasilitas' => 'Lemari', 'icon' => 'fa-drawer'],
+            ['nama_fasilitas' => 'Dapur', 'icon' => 'fa-utensils'],
+            ['nama_fasilitas' => 'Lemari', 'icon' => 'fa-archive'],
             ['nama_fasilitas' => 'Meja', 'icon' => 'fa-table'],
-            ['nama_fasilitas' => 'Kasur', 'icon' => 'fa-bed']
+            ['nama_fasilitas' => 'Kasur', 'icon' => 'fa-bed'],
+            ['nama_fasilitas' => 'TV', 'icon' => 'fa-tv'],
+            ['nama_fasilitas' => 'Dispenser', 'icon' => 'fa-tint'],
+            ['nama_fasilitas' => 'CCTV', 'icon' => 'fa-video']
         ];
 
         foreach ($facilities as $facility) {
